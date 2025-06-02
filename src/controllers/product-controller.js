@@ -1,9 +1,11 @@
 const mongoose = require('mongoose')
 const Product = mongoose.model('Product')
+const repository = require('../repositories/product-repository')
 
 exports.get = (req, res, next) => {
-  Product
-    .find({}).then((data) => {
+  repository
+    .get()
+    .then((data) => {
       res.status(200).send(data)
     }).catch(e => {
       res.status(500).send(e)
@@ -11,10 +13,9 @@ exports.get = (req, res, next) => {
 }
 
 exports.getBySlug = (req, res, next) => {
-  Product
-    .findOne({
-      slug: req.params.slug
-    }).then((data) => {
+  repository
+    .getBySlug(req.params.slug)
+    .then((data) => {
       res.status(200).send(data)
     }).catch(e => {
       res.status(500).send(e)
@@ -22,19 +23,19 @@ exports.getBySlug = (req, res, next) => {
 }
 
 exports.getById = (req, res, next) => {
-  Product
-    .findById({}).then((data) => {
+  repository
+    .getById(req.params.id)
+    .then((data) => {
       res.status(200).send(data)
     }).catch(e => {
       res.status(500).send(e)
     })
 }
 
-exports.getByTags = (req, res, next) => {
-  Product
-    .findOne({
-      tags: req.params.tag
-    }).then((data) => {
+exports.getByTag = (req, res, next) => {
+  repository
+    .getByTag(req.body.tag)
+    .then((data) => {
       res.status(200).send(data)
     }).catch(e => {
       res.status(500).send(e)
@@ -42,10 +43,8 @@ exports.getByTags = (req, res, next) => {
 }
 
 exports.post = (req, res, next) => {
-  const product = new Product(req.body)
-  product
-    .save()
-    .then(() => {
+  repository
+    .create(req.body).then(() => {
       console.log("Product Saved into DB")
       res.status(201).send({ message: "Product has been registered " })
     }).catch(e => {
@@ -58,17 +57,9 @@ exports.post = (req, res, next) => {
 
 exports.put = (req, res, next) => {
   const id = req.params.id
-  Product
-    .findByIdAndUpdate(
-      id, {
-      $set: {
-        title: req.body.title,
-        description: req.body.description,
-        price: req.body.price,
-        slug: req.body.slug
-      }
-    }
-    ).then(() => {
+  repository
+    .update(id, req.body)
+    .then(() => {
       res.status(200).send({
         message: "Product updated"
       })
@@ -82,8 +73,8 @@ exports.put = (req, res, next) => {
 
 exports.delete = (req, res, next) => {
   const id = req.params.id
-  Product
-    .findByIdAndDelete(id)
+  repository
+    .delete(id)
     .then(() => {
       res.status(200).send({
         message: "Product removed"
