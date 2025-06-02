@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ./bin/server.js"
+    "start": "nodemon ./bin/server.js",
+    "dev:db": "docker-compose up -d mongodb",
+    "dev:wait": "./scripts/wait-for-it.sh localhost:27017 --timeout=30 --strict -- echo 'MongoDB is ready'",
+    "dev": "npm run dev:db && npm run dev:wait && npx nodemon ./bin/server.js"
   },
   "keywords": [],
   "author": "",
